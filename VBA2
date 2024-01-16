@@ -1,0 +1,166 @@
+Attribute VB_Name = "Module1"
+Sub StockAnalysis()
+
+
+'Create the variable and declare variables
+
+Dim Total As Double
+Dim i As Long
+Dim change As Single
+Dim j As Integer
+Dim start As Long
+Dim RowCount As Long
+Dim PercentChange As Single
+Dim days As Integer
+Dim DailyChange As Single
+Dim AverageChange As Single
+
+
+'Name the title for each row
+
+Range("I1").Value = "Ticker"
+Range("J1").Value = "Yearly Change"
+Range("K1").Value = "Percent Change"
+Range("L1").Value = "Total Stock Volume"
+
+'Assigning values to the variables
+j = 0
+Total = 0
+change = 0
+start = 2
+
+'Count the number of rows
+
+
+ RowCount = Cells(Rows.Count, "A").End(xlUp).Row
+
+         For i = 2 To RowCount
+
+'Check if the value has changed
+
+
+            If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+'Assign the values we got from the loop
+            Total = Total + Cells(i, 7).Value
+
+'Reset the total volume
+
+             If Total = 0 Then
+'Print the results
+
+             Range("I" & 2 + j).Value = Cells(i, 1).Value
+             Range("J" & 2 + j).Value = 0
+             Range("K" & 2 + j).Value = "%" & 0
+             Range("L" & 2 + j).Value = 0
+             Else
+
+
+
+             If Cells(start, 3) = 0 Then
+               For find_value = start To i
+                   If Cells(find_value, 3).Value <> 0 Then
+                       start = find_value
+                       Exit For
+                   End If
+             Next find_value
+           End If
+
+
+
+    change = (Cells(i, 6) - Cells(start, 3))
+    PercentChange = change / Cells(start, 3)
+
+'Begin the next ticker
+
+start = i + 1
+
+'print the results
+Range("I" & 2 + j).Value = Cells(i, 1).Value
+Range("J" & 2 + j).Value = change
+Range("J" & 2 + j).NumberFormat = "0.00"
+Range("K" & 2 + j).Value = PercentChange
+Range("K" & 2 + j).NumberFormat = "0.00"
+Range("L" & 2 + j).Value = Total
+
+
+          Select Case change
+
+                 Case Is > 0
+                  Range("J" & 2 + j).Interior.ColorIndex = 4
+                Case Is < 0
+
+                  Range("J" & 2 + j).Interior.ColorIndex = 3
+              Case Else
+                   Range("J" & 2 + j).Interior.ColorIndex = 0
+
+        End Select
+     End If
+
+
+'reset variables for new stock ticker
+Total = 0
+change = 0
+j = j + 1
+days = 0
+'if ticker available
+
+   Else
+
+Total = Total + Cells(i, 7).Value
+
+  End If
+
+ Next i
+ 
+ 
+ 
+ 
+ 
+ 
+ '--------------------
+ 
+
+ Dim Greatest_Increase As Double
+  Dim Greatest_Decrease As Double
+   Dim Total_Volume As Double
+   Search_Percent = Range("K:K")
+   Search_Volume = Range("L:L")
+   
+   Cells(2, 14).Value = "Greatest_Percent_ Increase"
+   Cells(3, 14).Value = "Greatest_Percent_ Decrease"
+   Cells(4, 14).Value = "Greatest_Total_Vol"
+   Cells(1, 15).Value = "Ticker"
+   Cells(1, 16).Value = "Value"
+   
+   
+   'Use min max to find value
+   Greatest_Increase = Application.WorksheetFunction.Max(Search_Percent)
+   Cells(2, 16).Value = Greatest_Increase
+   
+    Greatest_Decrease = Application.WorksheetFunction.Min(Search_Percent)
+   Cells(3, 16).Value = Greatest_Decrease
+   
+   
+   Total_Volume = Application.WorksheetFunction.Max(Search_Volume)
+   Cells(4, 16).Value = Total_Volume
+   
+   'Use Match Function to find ticker name
+  
+   Dim Ticker_Increase As Double
+   Ticker_Increase = WorksheetFunction.Match(WorksheetFunction.Max(Range("K2:K" & RowCount)), Range("K2:K" & RowCount), 0)
+     Cells(2, 15).Value = Cells(Ticker_Increase + 1, 9)
+     
+     Dim Ticker_Decrease As Double
+   Ticker_Decrease = WorksheetFunction.Match(WorksheetFunction.Min(Range("K2:K" & RowCount)), Range("K2:K" & RowCount), 0)
+     Cells(3, 15).Value = Cells(Ticker_Decrease + 1, 9)
+     
+  
+   Dim Total_Vol As Double
+  Total_Vol = WorksheetFunction.Match(WorksheetFunction.Max(Range("L2:L" & RowCount)), Range("L2:L" & RowCount), 0)
+  Cells(4, 15).Value = Cells(Total_Vol + 1, 9)
+  
+  'format percents
+  Range("P2:P3").NumberFormat = "0.00%"
+  
+End Sub
+
